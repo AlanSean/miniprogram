@@ -1,0 +1,15 @@
+{
+  "pages": [
+    "index/index"
+  ],
+  "window": {
+    "enablePullDownRefresh": false,
+    "navigationBarTitleText": "仙桃视频",
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTextStyle": "white",
+    "navigationStyle": "custom"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

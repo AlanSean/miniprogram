@@ -1,0 +1,121 @@
+var
+    pageInstance, //页面实例
+    loadmore,
+    content,
+    scrollTop,
+    isfreeze=false,//是否冻结 多用在动画过渡期
+    islog = false,
+    mode = 'miniprogram', // text 文字形式的下拉刷新  miniprogram 小程序样式的下拉刷新
+    topDistance = 70, //下拉距离
+    overtime = 5000, //超时时间 超时自动归位
+    moreStatus = 'pull', // pull 下拉 drop 到释放点了 loading 释放中 loosen 不到释放的位置松开了 complete 动画也完成
+    text = {
+        pull: '下拉刷新', //pull 时加载提示区域的文字
+        loading: '刷新中', //loading 时加载提示区域的文字
+        drop: '松开刷新', //drop 时加载提示区域的文字
+        loosen: '下拉刷新' //pull 和pull 一致
+    },
+    cha = 0,
+    isComplete = false, //是否完成刷新
+    startY = 0; //触摸的位置
+var log = function(text) {
+    if (islog) {
+        console.log(text);
+    }
+}
+var setLoadMoreStatus = function(status) {
+    if (status != moreStatus) {
+        moreStatus = status;
+        loadmore.callMethod('setLoadMoreStatus', status);
+    }
+}
+var setTransform = function(num) {
+    content.setStyle({
+        'transform': 'translateY('+num + 'px)'
+    });
+}
+var onTopLoaded = function() {
+    log('释放完成');
+    setTransform(0);
+}
+var touchStart = function(e, ins) {
+    if (isfreeze) return;
+    ins.callMethod('getScrollTop');
+    if(scrollTop <= 0){
+        var touch = e.touches[0] || e.changedTouches[0];
+        setLoadMoreStatus('pull');
+        log('滚动条在顶部可以进行下拉刷新哦~');
+        startY = touch.pageY;
+        if (content.hasClass('is-dropped')) {
+            content.removeClass('is-dropped');
+        }
+    }
+}
+
+var touchMove = function(e, ins) {
+    var touch = e.touches[0] || e.changedTouches[0];
+    if (scrollTop > 0  || isfreeze ) return;
+    cha = (touch.pageY - startY) / 2;
+    if (cha >= 0) {
+        log('下拉的距离' + cha);
+        setTransform(cha);
+    }
+    if (cha >= topDistance) {
+        if (moreStatus != 'drop') {
+            log('到这里已经可以松手刷新啦');
+            setLoadMoreStatus('drop');
+        }
+    } else {
+        if (moreStatus != 'pull') {
+            log('距离又不够刷新了');
+            setLoadMoreStatus('pull');
+        }
+    }
+}
+var touchEnd = function(e, ins) {
+    var touch = e.touches[0] || e.changedTouches[0];
+    if (scrollTop > 0  || isfreeze  || touch.pageY < startY) return;
+    cha = (touch.pageY - startY) /2;
+    if (cha == 0) {
+        log('哎呀,你都没有下拉就松开了');
+        return;
+    }
+    content.addClass('is-dropped');
+    if (cha >= topDistance && moreStatus=='drop') {
+        log('释放中');
+        cha = topDistance;
+        setTransform(cha);
+        ins.callMethod('loadTop');
+        setLoadMoreStatus('loading');
+    } else if(moreStatus == 'pull') {
+        log('下拉的距离太短,不能触发刷新哦~');
+        setLoadMoreStatus('loosen');
+        setTransform(0);
+    }
+
+}
+
+function propObserver(newValue, oldValue, ownerInstance, instance) {
+    scrollTop = newValue.scrollTop;
+    if (content == undefined) {
+        content = ownerInstance.selectComponent("#loadmore");
+        pageInstance = instance;
+        loadmore = ownerInstance.selectComponent("#loadmore");
+    }
+    if(newValue.isfreeze !=isfreeze){
+         isfreeze = newValue.isfreeze;
+         if(!isfreeze) setLoadMoreStatus('pull');
+    }
+    if(newValue.isComplete!=isComplete){
+        isComplete = newValue.isComplete;
+        if (isComplete) {
+            onTopLoaded();
+        }
+    }
+}
+module.exports = {
+    propObserver: propObserver,
+    touchStart: touchStart,
+    touchMove: touchMove,
+    touchEnd: touchEnd
+}

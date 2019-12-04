@@ -1,0 +1,61 @@
+<!--index.wxml-->
+<wxs module="loadmoreData" src="./index.wxs"></wxs>
+<view class="index">
+    <navigation type="search" title="loadmore"/>
+    <view class="container" style="padding-top: {{navHeight}}px">
+        <scroll-view
+            scroll-y="{{loadMoreStatus == 'pull' || loadMoreStatus == 'loosen'  || !loadmoreProp.isfreeze}}"
+            id="scrollView"
+            scroll-with-animation
+            scroll-top="{{scrollTop}}"
+            style="height:{{systemInfo.screenHeight-navHeight-tabbarHeight}}px">
+            <view id="loadmore" class="loadmore"
+                    change:prop="{{loadmoreData.propObserver}}"
+                    prop="{{loadmoreProp}}"
+                    bindtouchstart="{{loadmoreData.touchStart}}"
+                    bindtouchmove="{{loadmoreData.touchMove}}"
+                    bindtouchend="{{loadmoreData.touchEnd}}"
+                >
+                <view
+                    class=" loadmore-content">
+                    <view class="loadmore-top">
+                        <view wx:if="{{mode == 'text'}}" class="loadmore-text">
+                            <!-- loading图 -->
+                            <!-- <image src="../../images/loadmore/loading.png" mode="widthFix" /> -->
+                            <view class="spinner">
+                                <view class="spinner-container container1">
+                                    <view class="circle1"></view>
+                                    <view class="circle2"></view>
+                                    <view class="circle3"></view>
+                                    <view class="circle4"></view>
+                                </view>
+                                <view class="spinner-container container2">
+                                    <view class="circle1"></view>
+                                    <view class="circle2"></view>
+                                    <view class="circle3"></view>
+                                    <view class="circle4"></view>
+                                </view>
+                                <view class="spinner-container container3">
+                                    <view class="circle1"></view>
+                                    <view class="circle2"></view>
+                                    <view class="circle3"></view>
+                                    <view class="circle4"></view>
+                                </view>
+                            </view>
+                            <text>{{text[loadMoreStatus]}}</text>
+                        </view>
+                        <view wx:else class="loadmore-loading">
+                            <text class="one"></text>
+                            <text class="two"></text>
+                            <text class="three"></text>
+                        </view>
+                    </view>
+                    <!--  内容  -->
+                    <block >
+
+                    </block>
+                </view>
+            </view>
+        </scroll-view>
+    </view>
+</view>

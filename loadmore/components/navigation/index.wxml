@@ -1,0 +1,19 @@
+<view class="head" style="height:{{navHeight}}px">
+    <view class="title" style="line-height:{{menuButtonHeight+grap*2}}px;height:{{menuButtonHeight+grap*2}}px">
+        <view wx:if="{{type}}"  class="navigator" >
+            <navigator
+                wx:if="{{type == 'back'}}"
+                open-type="navigateBack"
+                hover-class="none">
+                <image class="back" src="/images/back.png" />
+            </navigator>
+            <navigator
+                wx:if="{{type == 'search'}}"
+                url="/pages/search/index"
+                hover-class="none" >
+                <image class="back" src="/images/search.png" />
+            </navigator>
+        </view>
+        <view class="text">{{title}}</view>
+    </view>
+</view>

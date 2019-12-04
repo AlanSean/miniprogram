@@ -1,0 +1,8 @@
+{
+	"enablePullDownRefresh":false,
+	"backgroundTextStyle": "light",
+	"disableScroll": true,
+	"usingComponents": {
+		"navigation": "/components/navigation/index"
+    }
+}
